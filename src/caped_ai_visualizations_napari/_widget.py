@@ -12,14 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
 )
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import (
-    QFileDialog,
-    QLabel,
-    QScrollArea,
-    QVBoxLayout,
-    QWidget,
-)
+from qtpy.QtWidgets import QFileDialog, QLabel, QVBoxLayout, QWidget
 
 if TYPE_CHECKING:
     import napari
@@ -46,7 +39,6 @@ class CapeVisuWidget(QWidget):
         super().__init__()
 
         self._layout = QVBoxLayout()
-        self._outer_scroll = QScrollArea()
         self.setLayout(self._layout)
         self._layout.addWidget(
             QLabel("caped-ai visualization wizard", parent=self)
@@ -86,11 +78,6 @@ class CapeVisuWidget(QWidget):
         self.catjsonbox.setFilter("Open categories json file (*.json)")
 
         self._layout.addWidget(self.catjsonbox)
-
-        self._outer_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self._outer_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self._outer_scroll.setWidgetResizable(True)
-        self._outer_scroll.setWidget(self)
 
         # Connnectors
 

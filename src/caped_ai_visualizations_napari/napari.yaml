@@ -1,5 +1,5 @@
 name: caped-ai-visualizations-napari
-display_name: Visualize Activations, Predictions, Bounding Boxes for oneat, vollseg, stardist, unet, care networks
+display_name: Visualize Neural Network Activations
 contributions:
   commands:
     - id: caped-ai-visualizations-napari.get_reader
