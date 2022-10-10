@@ -8,39 +8,108 @@ Replace code below according to your needs.
 """
 from typing import TYPE_CHECKING
 
-from magicgui import magic_factory
-from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas,
+)
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
+    QFileDialog,
+    QLabel,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
 
 if TYPE_CHECKING:
     import napari
 
 
-class ExampleQWidget(QWidget):
+class CapeVisuWidget(QWidget):
     # your QWidget.__init__ can optionally request the napari viewer instance
     # in one of two ways:
     # 1. use a parameter called `napari_viewer`, as done here
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
-    def __init__(self, napari_viewer):
+    def __init__(
+        self,
+        viewer: "napari.viewer.Viewer",
+        csvdir: str,
+        parameter_json: str,
+        coordinate_json: str,
+        catagories_json: str,
+        start_project_mid=0,
+        end_project_mid=1,
+        event_count_plot="Plot selected event count",
+        cell_count_plot="Plot cell count",
+        event_norm_count_plot="Plot selected normalized event count",
+    ):
         super().__init__()
-        self.viewer = napari_viewer
 
-        btn = QPushButton("Click me!")
-        btn.clicked.connect(self._on_click)
+        self._layout = QVBoxLayout()
+        self._outer_scroll = QScrollArea()
+        self.setLayout(self._layout)
+        self._layout.addWidget(
+            QLabel("caped-ai visualization wizard", parent=self)
+        )
 
-        self.setLayout(QHBoxLayout())
-        self.layout().addWidget(btn)
+        self.figure = plt.figure(figsize=(4, 4))
+        self.multiplot_widget = FigureCanvas(self.figure)
+        self.multiplot_widget.setMinimumSize(200, 200)
+        self.ax = self.multiplot_widget.figure.subplots(1, 1)
 
-    def _on_click(self):
-        print("napari has", len(self.viewer.layers), "layers")
+        self._layout.addWidget(self.multiplot_widget)
 
+        # Add network parameter json dropdown menu
 
-@magic_factory
-def example_magic_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
+        self.paramjsonbox = QFileDialog()
+        self.paramjsonbox.setAcceptMode(QFileDialog.AcceptOpen)
+        self.paramjsonbox.setFileMode(QFileDialog.ExistingFile)
+        self.paramjsonbox.setFilter(
+            "Open network Parameter json file (*.json)"
+        )
 
+        self._layout.addWidget(self.paramjsonbox)
 
-# Uses the `autogenerate: true` flag in the plugin manifest
-# to indicate it should be wrapped as a magicgui to autogenerate
-# a widget.
-def example_function_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
+        # Add coordinate json dropdown menu
+
+        self.cordjsonbox = QFileDialog()
+        self.cordjsonbox.setAcceptMode(QFileDialog.AcceptOpen)
+        self.cordjsonbox.setFileMode(QFileDialog.ExistingFile)
+        self.cordjsonbox.setFilter("Open coordinates json file (*.json)")
+
+        self._layout.addWidget(self.cordjsonbox)
+        # Add catagories json dropdown menu
+
+        self.catjsonbox = QFileDialog()
+        self.catjsonbox.setAcceptMode(QFileDialog.AcceptOpen)
+        self.catjsonbox.setFileMode(QFileDialog.ExistingFile)
+        self.catjsonbox.setFilter("Open categories json file (*.json)")
+
+        self._layout.addWidget(self.catjsonbox)
+
+        self._outer_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self._outer_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self._outer_scroll.setWidgetResizable(True)
+        self._outer_scroll.setWidget(self)
+
+        # Connnectors
+
+        self.paramjsonbox.filesSelected.connect(
+            self._capture_paramjson_callback()
+        )
+        self.cordjsonbox.filesSelected.connect(
+            self._capture_cordjson_callback()
+        )
+        self.catjsonbox.filesSelected.connect(self._capture_catjson_callback())
+
+    def _capture_paramjson_callback(self):
+
+        self.paramfile = self.paramjsonbox.selectFile()
+
+    def _capture_cordjson_callback(self):
+
+        self.cordfile = self.cordjsonbox.selectFile()
+
+    def _capture_catjson_callback(self):
+
+        self.catfile = self.catjsonbox.selectFile()

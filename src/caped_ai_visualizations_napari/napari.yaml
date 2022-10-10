@@ -4,7 +4,7 @@ contributions:
   commands:
     - id: caped-ai-visualizations-napari.get_reader
       python_name: caped_ai_visualizations_napari._reader:napari_get_reader
-      title: Open data with Visualize Activations, Predictions, Bounding Boxes
+      title: Open image data, segmentation images, associated json and csv files of predictions
     - id: caped-ai-visualizations-napari.write_multiple
       python_name: caped_ai_visualizations_napari._writer:write_multiple
       title: Save multi-layer data with Visualize Activations, Predictions, Bounding Boxes
@@ -15,17 +15,12 @@ contributions:
       python_name: caped_ai_visualizations_napari._sample_data:make_sample_data
       title: Load sample data from Visualize Activations, Predictions, Bounding Boxes
     - id: caped-ai-visualizations-napari.make_qwidget
-      python_name: caped_ai_visualizations_napari._widget:ExampleQWidget
-      title: Make example QWidget
-    - id: caped-ai-visualizations-napari.make_magic_widget
-      python_name: caped_ai_visualizations_napari._widget:example_magic_widget
-      title: Make example magic widget
-    - id: caped-ai-visualizations-napari.make_func_widget
-      python_name: caped_ai_visualizations_napari._widget:example_function_widget
-      title: Make example function widget
+      python_name: caped_ai_visualizations_napari._widget:CapeVisuWidget
+      title: Make caped visualization widget
+
   readers:
     - command: caped-ai-visualizations-napari.get_reader
-      accepts_directories: false
+      accepts_directories: true
       filename_patterns: ['*.csv', '*.tif', '*.json', '*.tiff', '*.TIF']
   writers:
     - command: caped-ai-visualizations-napari.write_multiple
@@ -40,9 +35,4 @@ contributions:
       key: unique_id.1
   widgets:
     - command: caped-ai-visualizations-napari.make_qwidget
-      display_name: Example QWidget
-    - command: caped-ai-visualizations-napari.make_magic_widget
-      display_name: Example Magic Widget
-    - command: caped-ai-visualizations-napari.make_func_widget
-      autogenerate: true
-      display_name: Example Function Widget
+      display_name: CapeVisuWidget
