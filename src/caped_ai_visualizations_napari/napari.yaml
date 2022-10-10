@@ -1,5 +1,5 @@
 name: caped-ai-visualizations-napari
-display_name: Visualize Activations, Predictions, Bounding Boxes
+display_name: Visualize Activations, Predictions, Bounding Boxes for oneat, vollseg, stardist, unet, care networks
 contributions:
   commands:
     - id: caped-ai-visualizations-napari.get_reader
@@ -26,14 +26,14 @@ contributions:
   readers:
     - command: caped-ai-visualizations-napari.get_reader
       accepts_directories: false
-      filename_patterns: ['*.npy']
+      filename_patterns: ['*.csv', '*.tif', '*.json', '*.tiff', '*.TIF']
   writers:
     - command: caped-ai-visualizations-napari.write_multiple
       layer_types: ['image*','labels*']
       filename_extensions: []
     - command: caped-ai-visualizations-napari.write_single_image
       layer_types: ['image']
-      filename_extensions: ['.npy']
+      filename_extensions: ['*.csv', '*.tif']
   sample_data:
     - command: caped-ai-visualizations-napari.make_sample_data
       display_name: Visualize Activations, Predictions, Bounding Boxes

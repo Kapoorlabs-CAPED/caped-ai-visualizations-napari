@@ -6,6 +6,9 @@ implement multiple readers or even other plugin contributions. see:
 https://napari.org/stable/plugins/guides.html?#readers
 """
 import numpy as np
+import pandas as pd
+from oneat.NEATUtils.utils import load_json
+from tifffile import imread
 
 
 def napari_get_reader(path):
@@ -29,14 +32,35 @@ def napari_get_reader(path):
         path = path[0]
 
     # if we know we cannot read the file, we immediately return None.
-    if not path.endswith(".npy"):
+    if isinstance(path, str) and path.endswith(
+        [".tif", ".tiff", ".TIF", ".TIFF"]
+    ):
+        return image_reader_function
+    if isinstance(path, str) and path.endswith([".json"]):
+        return json_reader_function
+    if isinstance(path, str) and path.endswith([".csv"]):
+        return csv_reader_function
+
+    else:
+        # otherwise we return none.
         return None
 
-    # otherwise we return the *function* that can read ``path``.
-    return reader_function
+
+def json_reader_function(path):
+
+    data = load_json(path)
+
+    return [(data)]
 
 
-def reader_function(path):
+def csv_reader_function(path):
+
+    data = pd.read_csv(path, delimiter=",")
+
+    return [(data)]
+
+
+def image_reader_function(path):
     """Take a path or list of paths and return a list of LayerData tuples.
 
     Readers are expected to return data as a list of tuples, where each tuple
@@ -61,7 +85,7 @@ def reader_function(path):
     # handle both a string and a list of strings
     paths = [path] if isinstance(path, str) else path
     # load all files into array
-    arrays = [np.load(_path) for _path in paths]
+    arrays = [imread(_path) for _path in paths]
     # stack arrays into single array
     data = np.squeeze(np.stack(arrays))
 
