@@ -12,21 +12,23 @@ from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
 )
 from napari import Viewer
-from qtpy.QtWidgets import QFileDialog, QLabel, QVBoxLayout, QWidget
+from qtpy.QtWidgets import (
+    QFileDialog,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 
-class CapeVisuWidget(QWidget):
+class CapeVisuFrameWidget(QWidget):
     # your QWidget.__init__ can optionally request the napari viewer instance
     # in one of two ways:
     # 1. use a parameter called `napari_viewer`, as done here
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
-    def __init__(
-        self,
-        viewer: Viewer,
-    ):
+    def __init__(self):
         super().__init__()
 
-        self.viewer = viewer
         self._layout = QVBoxLayout()
         self.setLayout(self._layout)
         self._layout.addWidget(
@@ -42,50 +44,62 @@ class CapeVisuWidget(QWidget):
 
         # Add network parameter json dropdown menu
 
-        self.paramjsonbox = QFileDialog()
-        self.paramjsonbox.setAcceptMode(QFileDialog.AcceptOpen)
-        self.paramjsonbox.setFileMode(QFileDialog.ExistingFile)
-        self.paramjsonbox.setFilter(
-            "Open network Parameter json file (*.json)"
-        )
+        self.paramjsonbox = QPushButton("Open network parameter json file")
 
         self._layout.addWidget(self.paramjsonbox)
 
         # Add coordinate json dropdown menu
 
-        self.cordjsonbox = QFileDialog()
-        self.cordjsonbox.setAcceptMode(QFileDialog.AcceptOpen)
-        self.cordjsonbox.setFileMode(QFileDialog.ExistingFile)
-        self.cordjsonbox.setFilter("Open coordinates json file (*.json)")
+        self.cordjsonbox = QPushButton("Open coordinates json file")
 
         self._layout.addWidget(self.cordjsonbox)
         # Add catagories json dropdown menu
 
-        self.catjsonbox = QFileDialog()
-        self.catjsonbox.setAcceptMode(QFileDialog.AcceptOpen)
-        self.catjsonbox.setFileMode(QFileDialog.ExistingFile)
-        self.catjsonbox.setFilter("Open categories json file (*.json)")
+        self.catjsonbox = QPushButton("Open categories json file")
 
         self._layout.addWidget(self.catjsonbox)
 
-        # Connnectors
 
-        self.paramjsonbox.filesSelected.connect(
+class CapeVisuWidget(QWidget):
+    def __init__(
+        self,
+        viewer: Viewer,
+    ):
+
+        self.viewer = viewer
+        # Connnectors
+        self.frameWidget = CapeVisuFrameWidget()
+        self.frameWidget.paramjsonbox.clicked.connect(
             self._capture_paramjson_callback()
         )
-        self.cordjsonbox.filesSelected.connect(
+        self.frameWidget.cordjsonbox.clicked.connect(
             self._capture_cordjson_callback()
         )
-        self.catjsonbox.filesSelected.connect(self._capture_catjson_callback())
+        self.frameWidget.catjsonbox.clicked.connect(
+            self._capture_catjson_callback()
+        )
 
     def _capture_paramjson_callback(self):
 
-        self.paramfile = self.paramjsonbox.selectFile()
+        dialog = QFileDialog()
+        dialog.setAcceptMode(QFileDialog.AcceptOpen)
+        dialog.setFileMode(QFileDialog.ExistingFile)
+        dialog.setNameFilter("Open network Parameter json file (*.json)")
+        self.paramfile = dialog.selectFile(filename=dialog.getOpenFileName())
 
     def _capture_cordjson_callback(self):
 
-        self.cordfile = self.cordjsonbox.selectFile()
+        dialog = QFileDialog()
+        dialog.setAcceptMode(QFileDialog.AcceptOpen)
+        dialog.setFileMode(QFileDialog.ExistingFile)
+        dialog.setNameFilter("Open coordinates json file (*.json)")
+
+        self.cordfile = dialog.selectFile(filename=dialog.getOpenFileName())
 
     def _capture_catjson_callback(self):
 
-        self.catfile = self.catjsonbox.selectFile()
+        dialog = QFileDialog()
+        dialog.setAcceptMode(QFileDialog.AcceptOpen)
+        dialog.setFileMode(QFileDialog.ExistingFile)
+        dialog.setNameFilter("Open categories json file (*.json)")
+        self.catfile = dialog.selectFile(filename=dialog.getOpenFileName())

@@ -15,7 +15,7 @@ contributions:
       python_name: caped_ai_visualizations_napari._sample_data:make_sample_data
       title: Load sample data from Visualize Activations, Predictions, Bounding Boxes
     - id: caped-ai-visualizations-napari.make_qwidget
-      python_name: caped_ai_visualizations_napari._widget:CapeVisuWidget
+      python_name: caped_ai_visualizations_napari._widget:CapeVisuFrameWidget
       title: Make caped visualization widget
 
   readers:
@@ -35,4 +35,4 @@ contributions:
       key: unique_id.1
   widgets:
     - command: caped-ai-visualizations-napari.make_qwidget
-      display_name: CapeVisuWidget
+      display_name: CapeVisuFrameWidget

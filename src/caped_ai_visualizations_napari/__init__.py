@@ -13,5 +13,6 @@ __all__ = (
     "write_single_image",
     "write_multiple",
     "make_sample_data",
+    "CapeVisuFrameWidget",
     "CapeVisuWidget",
 )
