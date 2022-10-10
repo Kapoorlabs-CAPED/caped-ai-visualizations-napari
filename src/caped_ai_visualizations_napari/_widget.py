@@ -6,16 +6,13 @@ see: https://napari.org/stable/plugins/guides.html?#widgets
 
 Replace code below according to your needs.
 """
-from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
 )
+from napari import Viewer
 from qtpy.QtWidgets import QFileDialog, QLabel, QVBoxLayout, QWidget
-
-if TYPE_CHECKING:
-    import napari
 
 
 class CapeVisuWidget(QWidget):
@@ -25,19 +22,11 @@ class CapeVisuWidget(QWidget):
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
     def __init__(
         self,
-        viewer: "napari.viewer.Viewer",
-        csvdir: str,
-        parameter_json: str,
-        coordinate_json: str,
-        catagories_json: str,
-        start_project_mid=0,
-        end_project_mid=1,
-        event_count_plot="Plot selected event count",
-        cell_count_plot="Plot cell count",
-        event_norm_count_plot="Plot selected normalized event count",
+        viewer: Viewer,
     ):
         super().__init__()
 
+        self.viewer = viewer
         self._layout = QVBoxLayout()
         self.setLayout(self._layout)
         self._layout.addWidget(
