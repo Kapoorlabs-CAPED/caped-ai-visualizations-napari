@@ -1,0 +1,48 @@
+name: caped-ai-visualizations-napari
+display_name: Visualize Activations, Predictions, Bounding Boxes
+contributions:
+  commands:
+    - id: caped-ai-visualizations-napari.get_reader
+      python_name: caped_ai_visualizations_napari._reader:napari_get_reader
+      title: Open data with Visualize Activations, Predictions, Bounding Boxes
+    - id: caped-ai-visualizations-napari.write_multiple
+      python_name: caped_ai_visualizations_napari._writer:write_multiple
+      title: Save multi-layer data with Visualize Activations, Predictions, Bounding Boxes
+    - id: caped-ai-visualizations-napari.write_single_image
+      python_name: caped_ai_visualizations_napari._writer:write_single_image
+      title: Save image data with Visualize Activations, Predictions, Bounding Boxes
+    - id: caped-ai-visualizations-napari.make_sample_data
+      python_name: caped_ai_visualizations_napari._sample_data:make_sample_data
+      title: Load sample data from Visualize Activations, Predictions, Bounding Boxes
+    - id: caped-ai-visualizations-napari.make_qwidget
+      python_name: caped_ai_visualizations_napari._widget:ExampleQWidget
+      title: Make example QWidget
+    - id: caped-ai-visualizations-napari.make_magic_widget
+      python_name: caped_ai_visualizations_napari._widget:example_magic_widget
+      title: Make example magic widget
+    - id: caped-ai-visualizations-napari.make_func_widget
+      python_name: caped_ai_visualizations_napari._widget:example_function_widget
+      title: Make example function widget
+  readers:
+    - command: caped-ai-visualizations-napari.get_reader
+      accepts_directories: false
+      filename_patterns: ['*.npy']
+  writers:
+    - command: caped-ai-visualizations-napari.write_multiple
+      layer_types: ['image*','labels*']
+      filename_extensions: []
+    - command: caped-ai-visualizations-napari.write_single_image
+      layer_types: ['image']
+      filename_extensions: ['.npy']
+  sample_data:
+    - command: caped-ai-visualizations-napari.make_sample_data
+      display_name: Visualize Activations, Predictions, Bounding Boxes
+      key: unique_id.1
+  widgets:
+    - command: caped-ai-visualizations-napari.make_qwidget
+      display_name: Example QWidget
+    - command: caped-ai-visualizations-napari.make_magic_widget
+      display_name: Example Magic Widget
+    - command: caped-ai-visualizations-napari.make_func_widget
+      autogenerate: true
+      display_name: Example Function Widget
