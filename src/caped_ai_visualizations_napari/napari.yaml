@@ -17,7 +17,7 @@ contributions:
       title: Load sample data from Visualize Activations, Predictions, Bounding Boxes
     - id: caped-ai-visualizations-napari.widget
       python_name: caped_ai_visualizations_napari._widget:plugin_wrapper_caped_ai_visualization
-      title: Make caped visualization widget
+      title: caped-ai-viz
 
   readers:
     - command: caped-ai-visualizations-napari.get_reader
@@ -36,4 +36,4 @@ contributions:
       key: unique_id.1
   widgets:
     - command: caped-ai-visualizations-napari.widget
-      display_name: Caped_ai_visualization
+      display_name: caped-ai-viz

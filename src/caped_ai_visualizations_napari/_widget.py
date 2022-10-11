@@ -16,7 +16,7 @@ import numpy as np
 from magicgui import magicgui
 from magicgui import widgets as mw
 from psygnal import Signal
-from qtpy.QtWidgets import QTabWidget, QVBoxLayout, QWidget
+from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 
 
 def plugin_wrapper_caped_ai_visualization():
@@ -299,6 +299,10 @@ def plugin_wrapper_caped_ai_visualization():
     tabs.addTab(parameter_star_tab, "Detection Parameter Selection")
 
     plugin.native.layout().addWidget(tabs)
+    plugin.label_head.native.setOpenExternalLinks(True)
+    plugin.label_head.native.setSizePolicy(
+        QSizePolicy.MinimumExpanding, QSizePolicy.Fixed
+    )
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
