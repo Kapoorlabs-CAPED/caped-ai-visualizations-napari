@@ -9,8 +9,10 @@ Replace code below according to your needs.
 
 import functools
 from pathlib import Path
+from typing import List
 
 import napari
+import numpy as np
 from magicgui import magicgui
 from magicgui import widgets as mw
 from psygnal import Signal
@@ -18,7 +20,6 @@ from psygnal import Signal
 
 def plugin_wrapper_caped_ai_visualization():
 
-    import numpy as np
     from oneat.NEATModels.neat_dynamic_resnet import NEATTResNet
     from oneat.NEATModels.neat_lstm import NEATLRNet
     from oneat.NEATModels.neat_static_resnet import NEATResNet
@@ -92,7 +93,6 @@ def plugin_wrapper_caped_ai_visualization():
     nms_algorithms = ["iou"]
 
     model_parameters = dict()
-
     model_catagories = dict()
     model_cord = dict()
 
@@ -262,7 +262,6 @@ def plugin_wrapper_caped_ai_visualization():
     )
     def plugin(
         viewer: napari.Viewer,
-        label_head,
         image: napari.layers.Image,
         oneat_model_class,
         oneat_model_type,
@@ -273,7 +272,7 @@ def plugin_wrapper_caped_ai_visualization():
         model_folder,
         csv_folder,
         progress_bar: mw.ProgressBar,
-    ):
+    ) -> List[napari.types.LayerDataTuple]:
         # x = get_data(image)
 
         nonlocal worker
