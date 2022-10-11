@@ -16,6 +16,7 @@ import numpy as np
 from magicgui import magicgui
 from magicgui import widgets as mw
 from psygnal import Signal
+from qtpy.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 
 
 def plugin_wrapper_caped_ai_visualization():
@@ -74,7 +75,7 @@ def plugin_wrapper_caped_ai_visualization():
         ((_aliases_vollnet[m][0] if len(_aliases_vollnet[m]) > 0 else m), m)
         for m in _models_vollnet
     ]
-
+    print(models_vollnet)
     models_lrnet = [
         ((_aliases_lrnet[m][0] if len(_aliases_lrnet[m]) > 0 else m), m)
         for m in _models_lrnet
@@ -105,10 +106,10 @@ def plugin_wrapper_caped_ai_visualization():
     DEFAULTS_MODEL = dict(
         oneat_model_class=NEATVollNet,
         oneat_model_type=CUSTOM_NEAT,
-        model_vollnet=None,  # models_vollnet[0][0],
-        model_lrnet=None,  # models_lrnet[0][0],
-        model_tresnet=None,  # models_tresnet[0][0],
-        model_resnet=None,  # models_resnet[0][0],
+        model_vollnet=models_vollnet[0][0],
+        model_lrnet=models_lrnet[0][0],
+        model_tresnet=models_tresnet[0][0],
+        model_resnet=models_resnet[0][0],
         axes="TZYX",
     )
 
@@ -148,7 +149,6 @@ def plugin_wrapper_caped_ai_visualization():
         ),
         nms_function=dict(
             widget_type="ComboBox",
-            visibile=False,
             label="Choice of non maximal supression algorithm",
             choices=nms_algorithms,
             value=DEFAULTS_PRED_PARAMETERS["nms_function"],
@@ -184,21 +184,23 @@ def plugin_wrapper_caped_ai_visualization():
     def plugin_prediction_parameters(
         norm_image,
         n_tiles,
+        nms_function,
         event_threshold,
         event_confidence,
-        nms_function,
         start_project_mid,
         end_project_mid,
     ):
 
         return plugin_prediction_parameters
 
-    kapoorlabslogo = abspath(__file__, "resources/kapoorlogo.png")
+    kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
+    citation = Path("https://doi.org/10.1242/focalplane.10759")
 
     @magicgui(
         label_head=dict(
             widget_type="Label",
-            label=f'<h1> <img src="{kapoorlabslogo}"> </h1>',
+            label=f'<h1> <img src="{kapoorlogo}"> </h1>',
+            value=f'<h5><a href=" {citation}"> FocalPlane</a></h5>',
         ),
         image=dict(label="Input Image"),
         oneat_model_class=dict(
@@ -217,28 +219,28 @@ def plugin_wrapper_caped_ai_visualization():
         ),
         model_vollnet=dict(
             widget_type="ComboBox",
-            visibile=False,
+            visible=False,
             label="Pre-trained VollNet Model",
             choices=models_vollnet,
             value=DEFAULTS_MODEL["model_vollnet"],
         ),
         model_lrnet=dict(
             widget_type="ComboBox",
-            visibile=False,
+            visible=False,
             label="Pre-trained LRNet Model",
             choices=models_lrnet,
             value=DEFAULTS_MODEL["model_lrnet"],
         ),
         model_tresnet=dict(
             widget_type="ComboBox",
-            visibile=False,
+            visible=False,
             label="Pre-trained TresNet Model",
             choices=models_tresnet,
             value=DEFAULTS_MODEL["model_tresnet"],
         ),
         model_resnet=dict(
             widget_type="ComboBox",
-            visibile=False,
+            visible=False,
             label="Pre-trained ResNet Model",
             choices=models_resnet,
             value=DEFAULTS_MODEL["model_resnet"],
@@ -288,6 +290,15 @@ def plugin_wrapper_caped_ai_visualization():
         CUSTOM_NEAT: plugin.model_folder,
     }
     """
+    tabs = QTabWidget()
+
+    parameter_star_tab = QWidget()
+    _parameter_star_tab_layout = QVBoxLayout()
+    parameter_star_tab.setLayout(_parameter_star_tab_layout)
+    _parameter_star_tab_layout.addWidget(plugin_prediction_parameters.native)
+    tabs.addTab(parameter_star_tab, "Detection Parameter Selection")
+
+    plugin.native.layout().addWidget(tabs)
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
@@ -300,12 +311,12 @@ def plugin_wrapper_caped_ai_visualization():
             )
 
     class Updater:
-        def __init__(self, model_param, catconfig, cordconfig):
-
-            self.model_param = model_param
-            self.catconfig = catconfig
-            self.cordconfig = cordconfig
-            self.viewer = plugin.viewer.value
+        def __init__(self):
+            def __call__(self, model_param, catconfig, cordconfig):
+                setattr(self.model_param, model_param)
+                setattr(self.catconfig, catconfig)
+                setattr(self.cordconfig, cordconfig)
+                self.viewer = plugin.viewer.value
 
             def _model(valid):
                 widgets_valid(
