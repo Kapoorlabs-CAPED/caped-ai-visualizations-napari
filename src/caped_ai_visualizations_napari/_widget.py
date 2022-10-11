@@ -147,7 +147,7 @@ def plugin_wrapper_caped_ai_visualization():
             value=DEFAULTS_PRED_PARAMETERS["n_tiles"],
         ),
         nms_function=dict(
-            widget_type="Combobox",
+            widget_type="ComboBox",
             visibile=False,
             label="Choice of non maximal supression algorithm",
             choices=nms_algorithms,
@@ -216,28 +216,28 @@ def plugin_wrapper_caped_ai_visualization():
             value=DEFAULTS_MODEL["oneat_model_type"],
         ),
         model_vollnet=dict(
-            widget_type="Combobox",
+            widget_type="ComboBox",
             visibile=False,
             label="Pre-trained VollNet Model",
             choices=models_vollnet,
             value=DEFAULTS_MODEL["model_vollnet"],
         ),
         model_lrnet=dict(
-            widget_type="Combobox",
+            widget_type="ComboBox",
             visibile=False,
             label="Pre-trained LRNet Model",
             choices=models_lrnet,
             value=DEFAULTS_MODEL["model_lrnet"],
         ),
         model_tresnet=dict(
-            widget_type="Combobox",
+            widget_type="ComboBox",
             visibile=False,
             label="Pre-trained TresNet Model",
             choices=models_tresnet,
             value=DEFAULTS_MODEL["model_tresnet"],
         ),
         model_resnet=dict(
-            widget_type="Combobox",
+            widget_type="ComboBox",
             visibile=False,
             label="Pre-trained ResNet Model",
             choices=models_resnet,
@@ -262,6 +262,7 @@ def plugin_wrapper_caped_ai_visualization():
     )
     def plugin(
         viewer: napari.Viewer,
+        label_head,
         image: napari.layers.Image,
         oneat_model_class,
         oneat_model_type,
@@ -352,23 +353,21 @@ def plugin_wrapper_caped_ai_visualization():
 
     update = Updater()
 
-    def select_model(key_vollnet):
+    def select_model(key):
         nonlocal model_selected
-        if key_vollnet is not None:
-            model_selected = key_vollnet
-            config_vollnet = model_parameters.get(key_vollnet)
-            catconfig = model_catagories.get(key_vollnet)
-            cordconfig = model_cord.get(key_vollnet)
+        if key is not None:
+            model_selected = key
+            model_param = model_parameters.get(key)
+            catconfig = model_catagories.get(key)
+            cordconfig = model_cord.get(key)
             update(
-                "model",
-                config_vollnet is not None,
-                config_vollnet,
+                model_param,
                 catconfig,
                 cordconfig,
             )
 
     @change_handler(plugin.model_folder, init=False)
-    def _model_vollnet_folder_change(_path: str):
+    def _model_folder_change(_path: str):
         path = Path(_path)
         key = CUSTOM_NEAT, path
         try:
