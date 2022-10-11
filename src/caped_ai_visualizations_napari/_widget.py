@@ -12,6 +12,7 @@ from pathlib import Path
 
 import napari
 from magicgui import magicgui
+from magicgui import widgets as mw
 from psygnal import Signal
 
 
@@ -261,6 +262,7 @@ def plugin_wrapper_caped_ai_visualization():
     )
     def plugin(
         viewer: napari.Viewer,
+        label_head,
         image: napari.layers.Image,
         oneat_model_class,
         oneat_model_type,
@@ -270,6 +272,7 @@ def plugin_wrapper_caped_ai_visualization():
         model_resnet,
         model_folder,
         csv_folder,
+        progress_bar: mw.ProgressBar,
     ):
         # x = get_data(image)
 
