@@ -292,11 +292,11 @@ def plugin_wrapper_caped_ai_visualization():
     """
     tabs = QTabWidget()
 
-    parameter_star_tab = QWidget()
-    _parameter_star_tab_layout = QVBoxLayout()
-    parameter_star_tab.setLayout(_parameter_star_tab_layout)
-    _parameter_star_tab_layout.addWidget(plugin_prediction_parameters.native)
-    tabs.addTab(parameter_star_tab, "Detection Parameter Selection")
+    parameter_tab = QWidget()
+    _parameter_tab_layout = QVBoxLayout()
+    parameter_tab.setLayout(_parameter_tab_layout)
+    _parameter_tab_layout.addWidget(plugin_prediction_parameters.native)
+    tabs.addTab(parameter_tab, "Detection Parameter Selection")
 
     plugin.native.layout().addWidget(tabs)
     plugin.label_head.native.setOpenExternalLinks(True)
