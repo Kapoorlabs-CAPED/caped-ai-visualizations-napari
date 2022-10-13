@@ -8,6 +8,7 @@ Replace code below according to your needs.
 """
 
 import functools
+import time
 from pathlib import Path
 from typing import List
 
@@ -15,6 +16,7 @@ import napari
 import numpy as np
 from magicgui import magicgui
 from magicgui import widgets as mw
+from napari.qt.threading import thread_worker
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 
@@ -26,7 +28,7 @@ def plugin_wrapper_caped_ai_visualization():
     from oneat.NEATModels.neat_static_resnet import NEATResNet
     from oneat.NEATModels.neat_vollnet import NEATVollNet
     from oneat.NEATUtils.utils import load_json
-    from oneat.pretrained import get_registered_models
+    from oneat.pretrained import get_model_folder, get_registered_models
 
     DEBUG = True
 
@@ -427,7 +429,35 @@ def plugin_wrapper_caped_ai_visualization():
         )
         key = model_class, model_name
         if key not in model_parameters:
-            pass
+
+            @thread_worker
+            def _get_model_folder():
+                return get_model_folder(*key)
+
+            def _process_model_folder(path):
+                try:
+                    model_parameters[key] = load_json(
+                        str(path / "parameters.json")
+                    )
+                    model_catagories[key] = load_json(
+                        str(path / "catagories.json")
+                    )
+                    model_cord[key] = load_json(str(path / "cord.json"))
+                finally:
+                    select_model(key)
+                    plugin.progress_bar.hide()
+
+            worker = _get_model_folder()
+            worker.returned.connect(_process_model_folder)
+            worker.start()
+
+            time.sleep(0.1)
+            plugin.call_button.enabled = False
+            plugin.progress_bar.label = "Downloading model"
+            plugin.progress_bar.show()
+
+        else:
+            select_model(key)
 
     @change_handler(plugin_prediction_parameters.event_threshold)
     def _event_threshold_change(value: float):
