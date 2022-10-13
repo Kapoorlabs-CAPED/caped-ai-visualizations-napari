@@ -179,6 +179,10 @@ def plugin_wrapper_caped_ai_visualization():
             label="End Project Mid",
             value=DEFAULTS_PRED_PARAMETERS["end_project_mid"],
         ),
+        defaults_prediction_parameters_button=dict(
+            widget_type="PushButton",
+            text="Restore Prediction Parameters Defaults",
+        ),
         call_button=False,
     )
     def plugin_prediction_parameters(
@@ -189,6 +193,7 @@ def plugin_wrapper_caped_ai_visualization():
         event_confidence,
         start_project_mid,
         end_project_mid,
+        defaults_prediction_parameters_button,
     ):
 
         return plugin_prediction_parameters
@@ -257,6 +262,9 @@ def plugin_wrapper_caped_ai_visualization():
             label="Load Oneat Detections",
             mode="r",
         ),
+        defaults_model_button=dict(
+            widget_type="PushButton", text="Restore Model Defaults"
+        ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
@@ -274,6 +282,7 @@ def plugin_wrapper_caped_ai_visualization():
         model_resnet,
         model_folder,
         csv_folder,
+        defaults_model_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
         # x = get_data(image)
@@ -395,5 +404,56 @@ def plugin_wrapper_caped_ai_visualization():
             pass
         finally:
             select_model(key)
+
+    @change_handler(
+        plugin.model_vollnet,
+        plugin.model_lrnet,
+        plugin.model_tresnet,
+        plugin.model_resnet,
+        init=False,
+    )
+    def _model_change(model_name: str):
+
+        model_class = (
+            NEATVollNet
+            if Signal.sender() is plugin.model_vollnet
+            else NEATLRNet
+            if Signal.sender() is plugin.model_lrnet
+            else NEATTResNet
+            if Signal.sender() is plugin.model_tresnet
+            else NEATResNet
+            if Signal.sender() is plugin.model_resnet
+            else None
+        )
+        key = model_class, model_name
+        if key not in model_parameters:
+            pass
+
+    @change_handler(plugin_prediction_parameters.event_threshold)
+    def _event_threshold_change(value: float):
+        plugin_prediction_parameters.event_threshold.value = value
+
+    @change_handler(plugin_prediction_parameters.event_confidence)
+    def _event_confidence_change(value: float):
+        plugin_prediction_parameters.event_confidence.value = value
+
+    @change_handler(plugin.defaults_model_button, init=False)
+    def restore_model_defaults():
+        for k, v in DEFAULTS_MODEL.items():
+            getattr(plugin, k).value = v
+
+    @change_handler(plugin.image, init=False)
+    def _image_change(image: napari.layers.Image):
+        plugin.image.tooltip = (
+            f"Shape: {get_data(image).shape, str(image.name)}"
+        )
+
+    @change_handler(
+        plugin_prediction_parameters.defaults_prediction_parameters_button,
+        init=False,
+    )
+    def restore_prediction_parameters_defaults():
+        for k, v in DEFAULTS_MODEL.items():
+            getattr(plugin, k).value = v
 
     return plugin
