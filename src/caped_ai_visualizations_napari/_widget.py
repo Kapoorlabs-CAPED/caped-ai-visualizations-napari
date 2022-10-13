@@ -116,10 +116,10 @@ def plugin_wrapper_caped_ai_visualization():
     )
 
     oneat_model_class_choices = [
-        ("Volumetric & Temporal (3D+t)", NEATVollNet),
-        ("Temporal LSTM (2D+t)", NEATLRNet),
-        ("Temporal CNN (2D+t)", NEATTResNet),
-        ("Planar (2D)", NEATResNet),
+        ("Volumetric (3D+t)", NEATVollNet),
+        ("LSTM (2D+t)", NEATLRNet),
+        ("CNN (2D+t)", NEATTResNet),
+        ("CNN (2D)", NEATResNet),
     ]
 
     oneat_model_type_choices = [
@@ -137,6 +137,24 @@ def plugin_wrapper_caped_ai_visualization():
         start_project_mid=4,
         end_project_mid=1,
     )
+
+    @magicgui(
+        call_button=False,
+    )
+    def plugin_activation(
+        defaults_activation_button,
+    ):
+
+        return plugin_activation
+
+    @magicgui(
+        call_button=False,
+    )
+    def plugin_nmst_parameters(
+        defaults_nmst_parameters_button,
+    ):
+
+        return plugin_nmst_parameters
 
     @magicgui(
         norm_image=dict(
@@ -308,6 +326,18 @@ def plugin_wrapper_caped_ai_visualization():
     parameter_tab.setLayout(_parameter_tab_layout)
     _parameter_tab_layout.addWidget(plugin_prediction_parameters.native)
     tabs.addTab(parameter_tab, "Detection Parameter Selection")
+
+    nmst_tab = QWidget()
+    _nmst_tab_layout = QVBoxLayout()
+    nmst_tab.setLayout(_nmst_tab_layout)
+    _nmst_tab_layout.addWidget(plugin_nmst_parameters.native)
+    tabs.addTab(nmst_tab, "Temporal NMS Selection")
+
+    activation_tab = QWidget()
+    _activation_tab_layout = QVBoxLayout()
+    activation_tab.setLayout(_activation_tab_layout)
+    _activation_tab_layout.addWidget(plugin_activation.native)
+    tabs.addTab(activation_tab, "Visualize NN Activations")
 
     plugin.native.layout().addWidget(tabs)
     plugin.label_head.native.setOpenExternalLinks(True)
