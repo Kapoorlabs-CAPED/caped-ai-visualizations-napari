@@ -38,6 +38,12 @@ def plugin_wrapper_caped_ai_visualization():
 
     DEBUG = True
 
+    def _raise(e):
+        if isinstance(e, BaseException):
+            raise e
+        else:
+            raise ValueError(e)
+
     def get_data(image, debug=DEBUG):
 
         image = image.data[0] if image.multiscale else image.data
@@ -480,6 +486,22 @@ def plugin_wrapper_caped_ai_visualization():
             plugin.call_button.enabled = all_valid
 
     update = Updater()
+
+    @functools.lru_cache(maxsize=None)
+    def get_model(model_type, model):
+        if model_type == CUSTOM_NEAT:
+            path = Path(model)
+            path.is_dir() or _raise(
+                FileNotFoundError(f"{path} is not a directory")
+            )
+            model_param = model_parameters[(model_type, model)]
+            catconfig = model_catagories[(model_type, model)]
+            cordconfig = model_cord[(model_type, model)]
+
+            model_class = plugin.oneat_model_class.value
+            return model_class(
+                model_param, str(path.parent), catconfig, cordconfig
+            )
 
     def select_model(key):
         nonlocal model_selected
