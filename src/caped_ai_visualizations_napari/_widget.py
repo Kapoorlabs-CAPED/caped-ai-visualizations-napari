@@ -116,10 +116,10 @@ def plugin_wrapper_caped_ai_visualization():
     )
 
     oneat_model_class_choices = [
-        ("TZYX", NEATVollNet),
-        ("TYXC", NEATLRNet),
-        ("YXT", NEATTResNet),
-        ("YXC", NEATResNet),
+        ("Volumetric & Temporal (3D+t)", NEATVollNet),
+        ("Temporal LSTM (2D+t)", NEATLRNet),
+        ("Temporal CNN (2D+t)", NEATTResNet),
+        ("Planar (2D)", NEATResNet),
     ]
 
     oneat_model_type_choices = [
