@@ -23,6 +23,10 @@ from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 
 def plugin_wrapper_caped_ai_visualization():
 
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_qt5agg import (
+        FigureCanvasQTAgg as FigureCanvas,
+    )
     from oneat.NEATModels.neat_dynamic_resnet import NEATTResNet
     from oneat.NEATModels.neat_lstm import NEATLRNet
     from oneat.NEATModels.neat_static_resnet import NEATResNet
@@ -136,6 +140,8 @@ def plugin_wrapper_caped_ai_visualization():
         nms_function=nms_algorithms[0],
         start_project_mid=4,
         end_project_mid=1,
+        nms_space=20,
+        nms_time=2,
     )
 
     @magicgui(
@@ -148,9 +154,35 @@ def plugin_wrapper_caped_ai_visualization():
         return plugin_activation
 
     @magicgui(
+        score_slider=dict(
+            widget_type="Slider",
+            label="Score Slider",
+            min=0.0,
+            max=1.0,
+            step=0.05,
+            tooltip="Slider value between the chosen threhsold and 1",
+            value=DEFAULTS_PRED_PARAMETERS["event_threshold"],
+        ),
+        nms_space=dict(
+            widget_type="FloatSpinBox",
+            label="NMS veto in space",
+            min=0.0,
+            step=5,
+            value=DEFAULTS_PRED_PARAMETERS["nms_space"],
+        ),
+        nms_time=dict(
+            widget_type="SpinBox",
+            label="NMS veto in time",
+            min=0,
+            step=1,
+            value=DEFAULTS_PRED_PARAMETERS["nms_time"],
+        ),
         call_button=False,
     )
     def plugin_nmst_parameters(
+        score_slider,
+        nms_space,
+        nms_time,
         defaults_nmst_parameters_button,
     ):
 
@@ -327,10 +359,17 @@ def plugin_wrapper_caped_ai_visualization():
     _parameter_tab_layout.addWidget(plugin_prediction_parameters.native)
     tabs.addTab(parameter_tab, "Detection Parameter Selection")
 
+    figure = plt.figure(figsize=(4, 4))
+    multiplot_widget = FigureCanvas(figure)
+    multiplot_widget.setMinimumSize(100, 100)
+    multiplot_widget.figure.subplots(1, 1)
+
     nmst_tab = QWidget()
     _nmst_tab_layout = QVBoxLayout()
+
     nmst_tab.setLayout(_nmst_tab_layout)
     _nmst_tab_layout.addWidget(plugin_nmst_parameters.native)
+    _nmst_tab_layout.addWidget(multiplot_widget)
     tabs.addTab(nmst_tab, "Temporal NMS Selection")
 
     activation_tab = QWidget()
@@ -496,6 +535,14 @@ def plugin_wrapper_caped_ai_visualization():
     @change_handler(plugin_prediction_parameters.event_confidence)
     def _event_confidence_change(value: float):
         plugin_prediction_parameters.event_confidence.value = value
+
+    @change_handler(plugin_nmst_parameters.nms_space)
+    def _nms_space_change(value: float):
+        plugin_nmst_parameters.nms_space.value = value
+
+    @change_handler(plugin_nmst_parameters.nms_time)
+    def _nms_time_change(value: float):
+        plugin_nmst_parameters.nms_time.value = value
 
     @change_handler(plugin.defaults_model_button, init=False)
     def restore_model_defaults():
