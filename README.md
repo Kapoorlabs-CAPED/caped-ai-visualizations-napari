@@ -7,7 +7,7 @@
 [![codecov](https://codecov.io/gh/Kapoorlabs-CAPED/caped-ai-visualizations-napari/branch/main/graph/badge.svg)](https://codecov.io/gh/Kapoorlabs-CAPED/caped-ai-visualizations-napari)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/caped-ai-visualizations-napari)](https://napari-hub.org/plugins/caped-ai-visualizations-napari)
 
-A plugin to visualize action and static classification output of oneat for visualizing outputs of the network predictions
+A plugin to visualize action and static classification outputs of oneat (predictions as bounding boxes, points layer, activation functions)
 
 ----------------------------------
 

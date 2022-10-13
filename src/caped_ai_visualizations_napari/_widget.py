@@ -1,10 +1,12 @@
 """
-This module is an example of a barebones QWidget plugin for napari
+Oneat is an action classification network and it stands for
+Open Network for Event as Action Topologies.
+In this Napari plugin we create an interactive module for obtaining
+the predictions, visualizing the outputs of the network
+as bounding box predictions, points layer,
+activations functions for different classes of oneat.
 
-It implements the Widget specification.
-see: https://napari.org/stable/plugins/guides.html?#widgets
-
-Replace code below according to your needs.
+Made by Kapoorlabs, 2022
 """
 
 import functools
@@ -560,7 +562,7 @@ def plugin_wrapper_caped_ai_visualization():
         init=False,
     )
     def restore_prediction_parameters_defaults():
-        for k, v in DEFAULTS_MODEL.items():
+        for k, v in DEFAULTS_PRED_PARAMETERS.items():
             getattr(plugin, k).value = v
 
     return plugin
