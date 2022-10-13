@@ -133,6 +133,15 @@ def plugin_wrapper_caped_ai_visualization():
         ("Load CSV", CSV_PREDICTIONS),
         ("Custom Oneat", CUSTOM_NEAT),
     ]
+    DEFAULTS_ACTIVATION_PARAMETERS = dict(
+        start_layer_viz=0,
+        end_layer_viz=1,
+        visualize_point=1,
+    )
+    DEFAULTS_NMST_PARAMETERS = dict(
+        nms_space=20,
+        nms_time=2,
+    )
 
     DEFAULTS_PRED_PARAMETERS = dict(
         norm_image=True,
@@ -142,14 +151,36 @@ def plugin_wrapper_caped_ai_visualization():
         nms_function=nms_algorithms[0],
         start_project_mid=4,
         end_project_mid=1,
-        nms_space=20,
-        nms_time=2,
     )
 
     @magicgui(
+        start_layer_viz=dict(
+            widget_type="SpinBox",
+            label="Start layer for Activation function",
+            min=0,
+            step=1,
+            value=DEFAULTS_ACTIVATION_PARAMETERS["start_layer_viz"],
+        ),
+        end_layer_viz=dict(
+            widget_type="SpinBox",
+            label="End layer for Activation function",
+            min=0,
+            step=1,
+            value=DEFAULTS_ACTIVATION_PARAMETERS["end_layer_viz"],
+        ),
+        visualize_point=dict(
+            widget_type="SpinBox",
+            label="Timepoint for visualizing Activation function",
+            min=1,
+            step=1,
+            value=DEFAULTS_ACTIVATION_PARAMETERS["visualize_point"],
+        ),
         call_button=False,
     )
     def plugin_activation(
+        start_layer_viz,
+        end_layer_viz,
+        visualize_point,
         defaults_activation_button,
     ):
 
@@ -170,14 +201,14 @@ def plugin_wrapper_caped_ai_visualization():
             label="NMS veto in space",
             min=0.0,
             step=5,
-            value=DEFAULTS_PRED_PARAMETERS["nms_space"],
+            value=DEFAULTS_NMST_PARAMETERS["nms_space"],
         ),
         nms_time=dict(
             widget_type="SpinBox",
             label="NMS veto in time",
             min=0,
             step=1,
-            value=DEFAULTS_PRED_PARAMETERS["nms_time"],
+            value=DEFAULTS_NMST_PARAMETERS["nms_time"],
         ),
         call_button=False,
     )
@@ -546,16 +577,38 @@ def plugin_wrapper_caped_ai_visualization():
     def _nms_time_change(value: float):
         plugin_nmst_parameters.nms_time.value = value
 
+    @change_handler(plugin_activation.start_layer_viz)
+    def _start_layer_change(value: int):
+        plugin_activation.start_layer_viz = value
+
+    @change_handler(plugin_activation.end_layer_viz)
+    def _end_layer_change(value: int):
+        plugin_activation.end_layer_viz = value
+
+    @change_handler(plugin_activation.visualize_point)
+    def _visualize_point_change(value: int):
+        plugin_activation.visualize_point = value
+
     @change_handler(plugin.defaults_model_button, init=False)
     def restore_model_defaults():
         for k, v in DEFAULTS_MODEL.items():
             getattr(plugin, k).value = v
 
-    @change_handler(plugin.image, init=False)
-    def _image_change(image: napari.layers.Image):
-        plugin.image.tooltip = (
-            f"Shape: {get_data(image).shape, str(image.name)}"
-        )
+    @change_handler(
+        plugin_nmst_parameters.defaults_nmst_parameters_button,
+        init=False,
+    )
+    def restore_nmst_parameters_defaults():
+        for k, v in DEFAULTS_NMST_PARAMETERS.items():
+            getattr(plugin, k).value = v
+
+    @change_handler(
+        plugin_activation.defaults_activation_button,
+        init=False,
+    )
+    def restore_activation_defaults():
+        for k, v in DEFAULTS_ACTIVATION_PARAMETERS.items():
+            getattr(plugin, k).value = v
 
     @change_handler(
         plugin_prediction_parameters.defaults_prediction_parameters_button,
@@ -564,5 +617,11 @@ def plugin_wrapper_caped_ai_visualization():
     def restore_prediction_parameters_defaults():
         for k, v in DEFAULTS_PRED_PARAMETERS.items():
             getattr(plugin, k).value = v
+
+    @change_handler(plugin.image, init=False)
+    def _image_change(image: napari.layers.Image):
+        plugin.image.tooltip = (
+            f"Shape: {get_data(image).shape, str(image.name)}"
+        )
 
     return plugin
