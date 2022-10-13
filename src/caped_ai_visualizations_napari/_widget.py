@@ -579,15 +579,15 @@ def plugin_wrapper_caped_ai_visualization():
 
     @change_handler(plugin_activation.start_layer_viz)
     def _start_layer_change(value: int):
-        plugin_activation.start_layer_viz = value
+        plugin_activation.start_layer_viz.value = value
 
     @change_handler(plugin_activation.end_layer_viz)
     def _end_layer_change(value: int):
-        plugin_activation.end_layer_viz = value
+        plugin_activation.end_layer_viz.value = value
 
     @change_handler(plugin_activation.visualize_point)
     def _visualize_point_change(value: int):
-        plugin_activation.visualize_point = value
+        plugin_activation.visualize_point.value = value
 
     @change_handler(plugin.defaults_model_button, init=False)
     def restore_model_defaults():
